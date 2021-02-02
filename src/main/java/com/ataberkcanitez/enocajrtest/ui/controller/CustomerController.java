@@ -17,7 +17,7 @@ public class CustomerController {
     }
 
     @PutMapping
-    public String updateCustomer(){
+    public String updatesCustomer(){
         return "update customer was called";
     }
 
