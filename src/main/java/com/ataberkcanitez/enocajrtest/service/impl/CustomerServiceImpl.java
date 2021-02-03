@@ -1,18 +1,22 @@
 package com.ataberkcanitez.enocajrtest.service.impl;
 
-import com.ataberkcanitez.enocajrtest.CustomerRepository;
+import com.ataberkcanitez.enocajrtest.io.repository.CustomerRepository;
 import com.ataberkcanitez.enocajrtest.exceptions.CustomerServiceException;
 import com.ataberkcanitez.enocajrtest.io.entity.CustomerEntity;
 import com.ataberkcanitez.enocajrtest.service.CustomerService;
 import com.ataberkcanitez.enocajrtest.shared.Utils;
 import com.ataberkcanitez.enocajrtest.shared.dto.CustomerDto;
+import com.ataberkcanitez.enocajrtest.shared.dto.OrdersDto;
 import com.ataberkcanitez.enocajrtest.ui.model.response.ErrorMessages;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +34,21 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDto createCustomer(CustomerDto customer) {
-        CustomerEntity customerEntity = new CustomerEntity();
+        for(int i = 0; i < customer.getOrders().size(); ++i){
+            OrdersDto order = customer.getOrders().get(i);
+            order.setCustomerDetails(customer);
+            order.setOrderId(utils.generatePublicId(30));
+            customer.getOrders().set(i, order);
+        }
 
-        BeanUtils.copyProperties(customer, customerEntity);
+        ModelMapper modelMapper = new ModelMapper();
+        CustomerEntity customerEntity = modelMapper.map(customer, CustomerEntity.class);
 
         customerEntity.setCustomerId(utils.generatePublicId(30));
 
         CustomerEntity storedCustomer = customerRepository.save(customerEntity);
 
-        CustomerDto returnValue = new CustomerDto();
-        BeanUtils.copyProperties(storedCustomer, returnValue);
+        CustomerDto returnValue = modelMapper.map(storedCustomer, CustomerDto.class);
 
 
         return returnValue;
@@ -98,8 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerEntity> customers = customerPage.getContent();
 
         for(CustomerEntity customerEntity : customers){
-            CustomerDto customerDto = new CustomerDto();
-            BeanUtils.copyProperties(customerEntity, customerDto);
+            CustomerDto customerDto = new ModelMapper().map(customerEntity, CustomerDto.class);
             returnValue.add(customerDto);
         }
 

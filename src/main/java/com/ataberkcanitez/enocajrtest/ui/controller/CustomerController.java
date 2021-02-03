@@ -2,18 +2,21 @@ package com.ataberkcanitez.enocajrtest.ui.controller;
 
 import com.ataberkcanitez.enocajrtest.exceptions.CustomerServiceException;
 import com.ataberkcanitez.enocajrtest.service.CustomerService;
+import com.ataberkcanitez.enocajrtest.service.OrderService;
 import com.ataberkcanitez.enocajrtest.shared.dto.CustomerDto;
+import com.ataberkcanitez.enocajrtest.shared.dto.OrdersDto;
 import com.ataberkcanitez.enocajrtest.ui.model.request.CustomerDetailsRequestModel;
-import com.ataberkcanitez.enocajrtest.ui.model.response.CustomerRest;
-import com.ataberkcanitez.enocajrtest.ui.model.response.ErrorMessages;
-import com.ataberkcanitez.enocajrtest.ui.model.response.OperationStatusModel;
-import com.ataberkcanitez.enocajrtest.ui.model.response.RequestOperationStatus;
+import com.ataberkcanitez.enocajrtest.ui.model.response.*;
 import com.fasterxml.jackson.databind.util.BeanUtil;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class CustomerController {
 
     @Autowired
     CustomerService customerService;
+
+    @Autowired
+    OrderService orderService;
 
     @GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public CustomerRest getCustomer(@PathVariable String id){
@@ -44,12 +50,13 @@ public class CustomerController {
         if (customerDetails.getFirstName() == null || customerDetails.getFirstName().isEmpty())
         throw new CustomerServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 
-        CustomerDto customerDto = new CustomerDto();
-        BeanUtils.copyProperties(customerDetails, customerDto);
+        //CustomerDto customerDto = new CustomerDto();
+        //BeanUtils.copyProperties(customerDetails, customerDto);
+        ModelMapper modelMapper = new ModelMapper();
+        CustomerDto customerDto = modelMapper.map(customerDetails, CustomerDto.class);
 
         CustomerDto createdCustomer = customerService.createCustomer(customerDto);
-        BeanUtils.copyProperties(createdCustomer, returnValue);
-
+        returnValue = modelMapper.map(createdCustomer, CustomerRest.class);
         return returnValue;
     }
 
@@ -100,6 +107,34 @@ public class CustomerController {
 
 
         return returnValue;
+    }
+
+
+    @GetMapping(path = "/{id}/orders",
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public List<OrdersRest> getCustomersOrders(@PathVariable String id){
+        List<OrdersRest> returnValue = new ArrayList<>();
+        List<OrdersDto> ordersDto = orderService.getOrders(id);
+
+        if (ordersDto != null && !ordersDto.isEmpty()){
+            Type listType = new TypeToken<List<OrdersRest>>() {}.getType();
+            returnValue = new ModelMapper().map(ordersDto, listType);
+        }
+
+
+        return returnValue;
+    }
+
+    @GetMapping(path = "/{customerId}/orders/{orderId}",
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public OrdersRest getCustomerOrder(@PathVariable String customerId, @PathVariable String orderId){
+
+        OrdersDto ordersDto = orderService.getOrder(orderId);
+
+
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(ordersDto, OrdersRest.class);
+
     }
 
 

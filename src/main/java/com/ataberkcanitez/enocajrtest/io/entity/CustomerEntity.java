@@ -1,10 +1,8 @@
 package com.ataberkcanitez.enocajrtest.io.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "customers")
 public class CustomerEntity implements Serializable {
@@ -26,6 +24,17 @@ public class CustomerEntity implements Serializable {
 
     @Column(nullable = false)
     private int age;
+
+    @OneToMany(mappedBy = "customerDetails", cascade = CascadeType.ALL)
+    private List<OrderEntity> orders;
+
+    public List<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderEntity> orders) {
+        this.orders = orders;
+    }
 
     public long getId() {
         return id;

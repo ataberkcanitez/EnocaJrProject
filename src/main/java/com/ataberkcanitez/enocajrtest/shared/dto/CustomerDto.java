@@ -1,6 +1,7 @@
 package com.ataberkcanitez.enocajrtest.shared.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class CustomerDto implements Serializable {
 
@@ -11,6 +12,7 @@ public class CustomerDto implements Serializable {
     private String firstName;
     private String lastName;
     private int age;
+    private List<OrdersDto> orders;
 
     public long getId() {
         return id;
@@ -50,5 +52,17 @@ public class CustomerDto implements Serializable {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public List<OrdersDto> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrdersDto> orders) {
+        this.orders = orders;
     }
 }

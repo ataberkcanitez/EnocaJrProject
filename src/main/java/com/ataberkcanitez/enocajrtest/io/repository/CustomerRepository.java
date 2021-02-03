@@ -1,4 +1,4 @@
-package com.ataberkcanitez.enocajrtest;
+package com.ataberkcanitez.enocajrtest.io.repository;
 
 import com.ataberkcanitez.enocajrtest.io.entity.CustomerEntity;
 import org.springframework.data.repository.CrudRepository;

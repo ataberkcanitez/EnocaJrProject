@@ -1,10 +1,14 @@
 package com.ataberkcanitez.enocajrtest.ui.model.request;
 
+import java.util.List;
+
 public class CustomerDetailsRequestModel {
 
     private String firstName;
     private String lastName;
     private int age;
+    private List<OrderRequestModel> orders;
+
 
     public String getFirstName() {
         return firstName;
@@ -28,5 +32,13 @@ public class CustomerDetailsRequestModel {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public List<OrderRequestModel> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderRequestModel> orders) {
+        this.orders = orders;
     }
 }
