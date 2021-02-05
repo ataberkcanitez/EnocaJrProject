@@ -61,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         if(customerEntity == null) throw new CustomerServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
 
-        BeanUtils.copyProperties(customerEntity, returnValue);
+        returnValue = new ModelMapper().map(customerEntity, CustomerDto.class);
 
 
         return returnValue;
@@ -77,11 +77,8 @@ public class CustomerServiceImpl implements CustomerService {
         customerEntity.setLastName(customer.getLastName());
         customerEntity.setAge(customer.getAge());
 
-
         CustomerEntity updatedCustomer = customerRepository.save(customerEntity);
-        BeanUtils.copyProperties(updatedCustomer, returnValue);
-
-
+        returnValue = new ModelMapper().map(updatedCustomer, CustomerDto.class);
 
         return returnValue;
     }
@@ -90,7 +87,6 @@ public class CustomerServiceImpl implements CustomerService {
     public void deleteCustomer(String customerId) {
         CustomerEntity customerEntity = customerRepository.findCustomerEntityByCustomerId(customerId);
         if(customerEntity == null) throw new CustomerServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-
 
         customerRepository.delete(customerEntity);
     }

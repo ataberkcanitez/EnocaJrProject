@@ -35,7 +35,7 @@ public class CustomerController {
         CustomerRest returnValue = new CustomerRest();
 
         CustomerDto customerDto = customerService.getCustomerByCustomerId(id);
-        BeanUtils.copyProperties(customerDto, returnValue);
+        returnValue = new ModelMapper().map(customerDto, CustomerRest.class);
 
         return returnValue;
     }
@@ -68,11 +68,13 @@ public class CustomerController {
     public CustomerRest updatesCustomer(@PathVariable String id,@RequestBody CustomerDetailsRequestModel customerDetails){
         CustomerRest returnValue = new CustomerRest();
 
+        ModelMapper modelMapper = new ModelMapper();
+
         CustomerDto customerDto = new CustomerDto();
-        BeanUtils.copyProperties(customerDetails, customerDto);
+        customerDto = modelMapper.map(customerDetails, CustomerDto.class);
 
         CustomerDto updatedCustomer = customerService.updateCustomer(id, customerDto);
-        BeanUtils.copyProperties(updatedCustomer, returnValue);
+        returnValue = modelMapper.map(updatedCustomer, CustomerRest.class);
 
         return returnValue;
     }
@@ -100,8 +102,7 @@ public class CustomerController {
 
         List<CustomerDto> customers = customerService.getCustomers(page, limit);
         for(CustomerDto customerDto : customers){
-            CustomerRest customerModel = new CustomerRest();
-            BeanUtils.copyProperties(customerDto,customerModel);
+            CustomerRest customerModel = new ModelMapper().map(customerDto, CustomerRest.class);
             returnValue.add(customerModel);
         }
 

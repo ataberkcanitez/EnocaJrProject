@@ -10,8 +10,4 @@ public interface CustomerRepository extends PagingAndSortingRepository<CustomerE
 
     CustomerEntity findCustomerEntityByCustomerId(String id);
 
-
-
-
-
 }
